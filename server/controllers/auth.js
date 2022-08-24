@@ -1,6 +1,6 @@
-import User from "../models/User.js";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import User from '../models/User.js'
+import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
 
 // Register user
 export const register = async (req, res) => {
@@ -11,52 +11,47 @@ export const register = async (req, res) => {
 
 		if (isUsed) {
 			return res.json({
-				message: "Данный username уже занят."
+				message: 'Данный username уже занят.',
 			})
 		}
 
-
-		const salt = bcrypt.genSaltSync(10);
-		const hash = bcrypt.hashSync(password, salt);
+		const salt = bcrypt.genSaltSync(10)
+		const hash = bcrypt.hashSync(password, salt)
 
 		const newUser = new User({
 			username,
 			password: hash,
 		})
 
+		const token = jwt.sign(
+			{
+				id: newUser._id,
+			},
+			process.env.JWT_SECRET,
+			{ expiresIn: '30d' },
+		)
 
-		await newUser.save();
+		await newUser.save()
 
 		res.json({
 			newUser,
-			message: "Регистрация прошла успешно",
+			token,
+			message: 'Регистрация прошла успешно.',
 		})
-
-
-
 	} catch (error) {
-		res.json({
-			message: "Ошибка при создании пользователя"
-		})
+		res.json({ message: 'Ошибка при создании пользователя.' })
 	}
 }
-
-
-
 
 // Login user
 export const login = async (req, res) => {
 	try {
 		const { username, password } = req.body
-
-
-
-
 		const user = await User.findOne({ username })
 
 		if (!user) {
 			return res.json({
-				message: "Такого пользователя не существует."
+				message: 'Такого юзера не существует.',
 			})
 		}
 
@@ -64,7 +59,7 @@ export const login = async (req, res) => {
 
 		if (!isPasswordCorrect) {
 			return res.json({
-				message: "Неверный пароль",
+				message: 'Неверный пароль.',
 			})
 		}
 
@@ -73,38 +68,27 @@ export const login = async (req, res) => {
 				id: user._id,
 			},
 			process.env.JWT_SECRET,
-			{ expiresIn: "30d" },
-
-		);
-
+			{ expiresIn: '30d' },
+		)
 
 		res.json({
-			token, user, message: "Вы вошли в систему."
+			token,
+			user,
+			message: 'Вы вошли в систему.',
 		})
-
-
-
-
-
-
 	} catch (error) {
-		res.json({
-			message: "Ошибка при авторизации",
-		})
+		res.json({ message: 'Ошибка при авторизации.' })
 	}
 }
 
-
-
-
-// Get me
+// Get Me
 export const getMe = async (req, res) => {
 	try {
 		const user = await User.findById(req.userId)
 
 		if (!user) {
 			return res.json({
-				message: "Такого пользователя не существует."
+				message: 'Такого юзера не существует.',
 			})
 		}
 
@@ -113,19 +97,14 @@ export const getMe = async (req, res) => {
 				id: user._id,
 			},
 			process.env.JWT_SECRET,
-			{ expiresIn: "30d" },
-
-		);
+			{ expiresIn: '30d' },
+		)
 
 		res.json({
 			user,
 			token,
 		})
-
-
 	} catch (error) {
-		return res.json({
-			message: "Нет доступа."
-		})
+		res.json({ message: 'Нет доступа.' })
 	}
 }
