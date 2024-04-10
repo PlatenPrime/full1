@@ -1,0 +1,19 @@
+.body {
+	padding: 0;
+	margin: 0;
+}
+
+#container {
+	min-height: 100vh;
+	background-color: #3b3b3b;
+	/* position: relative; */
+}
+
+#card {
+	width: 400px;
+	height: 400px;
+	background-color: rgb(34, 192, 13);
+	border-radius: 10px;
+	cursor: pointer;
+	position: fixed;
+}
